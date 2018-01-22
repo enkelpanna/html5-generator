@@ -1,2 +1,2 @@
 export { base } from "./base"
-export { listPage } from "./listPage"
+export { page } from "./page"

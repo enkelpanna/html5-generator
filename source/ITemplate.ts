@@ -1,5 +1,5 @@
-import { Generator	 } from "./Generator"
+import { Generator } from "./Generator"
 
 export interface ITemplate {
-	[key: string]: (generator: Generator, item: any) => string,
+	[key: string]: ITemplate | ((generator: Generator, item: any) => string),
 }
