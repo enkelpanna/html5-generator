@@ -1,7 +1,7 @@
 import { Generator as Base } from "@enkelpanna/core"
-import { base } from "./template"
+import { template } from "./template"
 import { Generator } from "./Generator"
 
 export default function(): Base {
-	return new Generator(base)
+	return new Generator(template())
 }

@@ -1,4 +1,4 @@
-import { Generator as Base, Filesystem, Site, SiteTree, ISiteConfiguration } from "@enkelpanna/core"
+import { Generator as Base, Filesystem, Site, SiteTree } from "@enkelpanna/core"
 import { ITemplate } from "./ITemplate"
 
 export class Generator extends Base {
