@@ -3,5 +3,5 @@ import { template } from "./template"
 import { Generator } from "./Generator"
 
 export default function(): Base {
-	return new Generator(template())
+	return new Generator([], template())
 }

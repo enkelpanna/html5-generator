@@ -3,12 +3,12 @@ import { ITemplate } from "./ITemplate"
 
 export class Generator extends Base {
 	readonly root?: SiteTree.Page
-	constructor(private template: ITemplate, private meta: { [key: string]: any } = {}, root?: SiteTree.Page) {
+	constructor(private prefix: string[], private template: ITemplate, private meta: { [key: string]: any } = {}, root?: SiteTree.Page) {
 		super()
 		this.root = root
 	}
-	protected create(template: ITemplate, meta: { [key: string]: any }, root?: SiteTree.Page): Generator {
-		return new Generator(template, meta, root)
+	protected create(prefix: string[], template: ITemplate, meta: { [key: string]: any }, root?: SiteTree.Page): Generator {
+		return new Generator(prefix, template, meta, root)
 	}
 	get<T>(key: string): T | undefined {
 		return this.meta[key]
@@ -16,10 +16,10 @@ export class Generator extends Base {
 	set(key: string, value: any): Generator
 	set(meta: { [key: string]: any }): Generator
 	set(meta: string | { [key: string]: any }, value?: any): Generator {
-		return this.create(this.template, typeof(meta) == "string" ? { ...this.meta, meta: value } : { ...this.meta, ...meta})
+		return this.create(this.prefix, this.template, typeof(meta) == "string" ? { ...this.meta, meta: value } : { ...this.meta, ...meta})
 	}
-	select(template: ITemplate): Generator {
-		return this.create(template, this.meta)
+	select(prefix: string[]): Generator {
+		return this.create(prefix, this.template, this.meta, this.root)
 	}
 	render(item: SiteTree.Inline.Inline | SiteTree.Block.Block | (SiteTree.Inline.Inline | SiteTree.Block.Block)[]): string
 	render(name: string, item: SiteTree.Inline.Inline | SiteTree.Block.Block): string
@@ -38,7 +38,13 @@ export class Generator extends Base {
 			""
 	}
 	protected renderItem(template: string, item: SiteTree.Item): string {
-		return this.template[template](this, item)
+		let result: string | undefined
+		const selector = [...this.prefix, template]
+		while (!result) {
+			result = this.template[selector.join(".")](this, item)
+			selector.shift()
+		}
+		return result
 	}
 	generate(site: Site): Filesystem.Folder
 	generate(item: SiteTree.Page, name: string): Filesystem.Folder
@@ -65,7 +71,7 @@ export class Generator extends Base {
 				return r
 			})
 		} else if (item instanceof Site) {
-			this.create(this.template, this.meta, item.root).set("url", "/").generate(item.root, "")
+			this.create(this.prefix, this.template, this.meta, item.root).set("url", "/").generate(item.root, "")
 		}
 		return result ? result : ""
 	}
